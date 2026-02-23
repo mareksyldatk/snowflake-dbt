@@ -116,6 +116,27 @@ What this script does:
 Before execution, replace:
 - `'<YOUR_GITHUB_CLASSIC_PAT>'` in `sql/bootstrap_git_integration.sql`
 
+## Deploy dbt Project in Snowsight (`SNOWFLAKE_DBT`)
+
+After your workspace is connected to this repo and `DBT_REPO` exists, deploy a Snowflake dbt project object:
+Reference flow: [Snowflake dbt Projects getting started tutorial](https://docs.snowflake.com/en/user-guide/tutorials/dbt-projects-on-snowflake-getting-started-tutorial#run-the-sql-commands-in-tasty-bytes-setup-sql-to-set-up-source-data).
+
+1. Open `Projects` -> `Workspaces`, then open your dbt workspace.
+2. Run `dbt deps` in the workspace command bar.
+3. Run `dbt build` once to validate project parsing and permissions.
+4. In the top-right menu, select `Connect` -> `Deploy dbt project`.
+5. In deploy dialog:
+   - Location: `ANALYTICS_PROD` / `INTEGRATION`
+   - Select or create object: `Create dbt project`
+   - Name: `SNOWFLAKE_DBT`
+   - Default target: `prod`
+6. Select `Deploy`.
+
+Notes:
+- This creates (or replaces) a Snowflake dbt project object, separate from the Git repository object.
+- Later updates from workspace use `Connect` -> `Redeploy dbt project` (adds a new project version).
+- If the UI cannot find the repo/object, run `sql/bootstrap_dbt_repo.sql` and refresh Snowsight.
+
 ## Setup Instructions
 
 0. (Optional) Create local `pyenv` virtualenv for dbt:
@@ -145,10 +166,6 @@ Before execution, replace:
 
 6. Build Silver + Gold models and run tests:
    - `dbt build --target prod`
-
-7. If you previously loaded into a prefixed schema (for example `BRONZE_BRONZE`), clean it up:
-   - `DROP SCHEMA IF EXISTS ANALYTICS_PROD.BRONZE_BRONZE CASCADE;`
-   - Re-run `dbt seed --target prod`.
 
 ## Expected Outputs
 
