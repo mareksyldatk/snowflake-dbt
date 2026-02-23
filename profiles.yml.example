@@ -3,9 +3,8 @@ snowflake_dbt:
   outputs:
     prod:
       type: snowflake
-      account: "<account_identifier>"
-      user: "SVC_DBT"
-      password: "<or use key-pair auth>"
+      account: "not needed"
+      user: "not needed"
       role: "ROLE_PROD_DBT"
       warehouse: "WH_PROD_DBT"
       database: "ANALYTICS_PROD"

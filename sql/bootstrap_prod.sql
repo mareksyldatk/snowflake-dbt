@@ -38,7 +38,7 @@ CREATE SCHEMA IF NOT EXISTS ANALYTICS_PROD.SECURITY;
 CREATE SCHEMA IF NOT EXISTS ANALYTICS_PROD.INTEGRATION;
 
 -- ------------------------------------------------------------------
--- 2) Create roles and service users
+-- 2) Create roles and (optional) service users
 -- ------------------------------------------------------------------
 USE ROLE SECURITYADMIN;
 
@@ -52,13 +52,7 @@ CREATE USER IF NOT EXISTS SVC_INGEST
   DEFAULT_ROLE = ROLE_PROD_INGEST
   MUST_CHANGE_PASSWORD = TRUE;
 
-CREATE USER IF NOT EXISTS SVC_DBT
-  PASSWORD = 'ChangeMe_Dbt_123!'
-  DEFAULT_ROLE = ROLE_PROD_DBT
-  MUST_CHANGE_PASSWORD = TRUE;
-
 GRANT ROLE ROLE_PROD_INGEST TO USER SVC_INGEST;
-GRANT ROLE ROLE_PROD_DBT TO USER SVC_DBT;
 
 -- ------------------------------------------------------------------
 -- 3) Warehouse grants

@@ -56,7 +56,7 @@ flowchart LR
 ```mermaid
 flowchart TB
   SVCI["User: SVC_INGEST"] --> RI["ROLE_PROD_INGEST"]
-  SVCD["User: SVC_DBT"] --> RD["ROLE_PROD_DBT"]
+  DBTU["dbt Users/Groups"] --> RD["ROLE_PROD_DBT"]
   BIU["BI Users/Groups"] --> RB["ROLE_PROD_BI"]
 
   RI --> WHI["WH_PROD_INGEST (USAGE, OPERATE)"]
@@ -124,7 +124,7 @@ Before execution, replace:
 
 1. Run core Snowflake bootstrap SQL:
    - Open and execute `sql/bootstrap_prod.sql`.
-   - This creates warehouses, database/schemas, roles, and service users.
+   - This creates warehouses, database/schemas, roles, and the optional ingest service user.
 
 2. Run Git integration bootstrap SQL (can be before or after step 1):
    - Open and execute `sql/bootstrap_git_integration.sql`.
@@ -134,7 +134,7 @@ Before execution, replace:
 3. Configure dbt profile:
    - Copy `profiles.yml.example` to your dbt profiles location as `profiles.yml`.
    - Typical location: `~/.dbt/profiles.yml`.
-   - Fill in your Snowflake `account`, `user`, and auth method.
+   - For Snowflake managed dbt projects in UI, `account`/`user` are not needed in the example profile.
 
 4. Install dbt package dependencies:
    - `dbt deps`
@@ -160,4 +160,3 @@ After successful run:
 ## Notes
 
 - Replace placeholder service-user passwords in `sql/bootstrap_prod.sql` before use.
-- Prefer key-pair auth for `SVC_DBT` in production.
