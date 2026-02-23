@@ -1,5 +1,4 @@
 -- Snowflake Git Integration Bootstrap
--- Target repo: https://github.com/mareksyldatk/snowflake-dbt.git
 --
 -- Execute in order. Replace <YOUR_GITHUB_CLASSIC_PAT> before running.
 -- For private GitHub repos, PAT typically needs classic `repo` scope.
@@ -62,10 +61,9 @@ CREATE OR REPLACE SECRET GITHUB_PAT_SECRET
 -- 3) Grant access for dbt role (SECURITYADMIN)
 -- ------------------------------------------------------------------
 -- Purpose:
--- Authorize ROLE_PROD_DBT to use the API integration and secret,
--- then allow creation of a GIT REPOSITORY object in INTEGRATION schema.
+-- Authorize ROLE_PROD_DBT to use the API integration and secret.
 -- Result:
--- ROLE_PROD_DBT can create/use DBT_REPO with secure credentials.
+-- ROLE_PROD_DBT can use integration credentials in Snowflake-managed dbt.
 GRANT USAGE ON INTEGRATION GITHUB_INT TO ROLE ROLE_PROD_DBT;
 GRANT USAGE ON DATABASE ANALYTICS_PROD TO ROLE ROLE_PROD_DBT;
 GRANT USAGE ON SCHEMA ANALYTICS_PROD.SECURITY TO ROLE ROLE_PROD_DBT;
@@ -73,44 +71,3 @@ GRANT READ ON SECRET ANALYTICS_PROD.SECURITY.GITHUB_PAT_SECRET TO ROLE ROLE_PROD
 GRANT USAGE ON SECRET ANALYTICS_PROD.SECURITY.GITHUB_PAT_SECRET TO ROLE ROLE_PROD_DBT;
 
 GRANT USAGE ON SCHEMA ANALYTICS_PROD.INTEGRATION TO ROLE ROLE_PROD_DBT;
-GRANT CREATE GIT REPOSITORY ON SCHEMA ANALYTICS_PROD.INTEGRATION TO ROLE ROLE_PROD_DBT;
-
--- ------------------------------------------------------------------
--- 4) Ensure executing user can use ROLE_PROD_DBT and create repository
--- ------------------------------------------------------------------
--- Purpose:
--- Grant ROLE_PROD_DBT to the current executing user, then register
--- the GitHub repo in Snowflake as DBT_REPO using integration + secret.
--- Result:
--- Repository is created under ROLE_PROD_DBT so follow-up operations
--- (FETCH/SHOW) work with the same role without ownership handoff.
-USE ROLE SECURITYADMIN;
-
-BEGIN
-  LET EXECUTING_USER STRING := CURRENT_USER();
-  EXECUTE IMMEDIATE 'GRANT ROLE ROLE_PROD_DBT TO USER "' || EXECUTING_USER || '"';
-END;
-
-USE ROLE ROLE_PROD_DBT;
-USE DATABASE ANALYTICS_PROD;
-USE SCHEMA INTEGRATION;
-
-CREATE OR REPLACE GIT REPOSITORY DBT_REPO
-  API_INTEGRATION = GITHUB_INT
-  ORIGIN = 'https://github.com/mareksyldatk/snowflake-dbt.git'
-  GIT_CREDENTIALS = ANALYTICS_PROD.SECURITY.GITHUB_PAT_SECRET;
-
--- ------------------------------------------------------------------
--- 5) Fetch and verify
--- ------------------------------------------------------------------
--- Purpose:
--- Pull repository metadata/content and confirm connectivity/access.
--- Result:
--- FETCH updates the repository object; SHOW commands confirm visible refs.
-ALTER GIT REPOSITORY DBT_REPO FETCH;
-
-SHOW GIT BRANCHES IN GIT REPOSITORY DBT_REPO;
-SHOW GIT TAGS IN GIT REPOSITORY DBT_REPO;
-
--- Optional inspection:
--- SHOW GIT REPOSITORIES IN SCHEMA ANALYTICS_PROD.INTEGRATION;

@@ -65,7 +65,7 @@ flowchart TB
 
   RI --> BRW["ANALYTICS_PROD.BRONZE (USAGE, CREATE TABLE/STAGE/FILE FORMAT)"]
   RD --> BRR["ANALYTICS_PROD.BRONZE (USAGE, SELECT, CREATE TABLE for dbt seed)"]
-  RD --> INTG["ANALYTICS_PROD.INTEGRATION (USAGE, CREATE GIT REPOSITORY)"]
+  RD --> INTG["ANALYTICS_PROD.INTEGRATION (USAGE)"]
   RD --> SEC["ANALYTICS_PROD.SECURITY (USAGE + READ/USAGE on GITHUB_PAT_SECRET)"]
   RD --> DMW["ANALYTICS_PROD.DIMENSIONS (USAGE, CREATE TABLE/VIEW)"]
   RD --> FCW["ANALYTICS_PROD.FACTS (USAGE, CREATE TABLE/VIEW)"]
@@ -78,7 +78,7 @@ flowchart TB
 | Role | Warehouse Permissions | Database/Schema Permissions | Data/Object Permissions |
 |---|---|---|---|
 | `ROLE_PROD_INGEST` | `WH_PROD_INGEST`: `USAGE`, `OPERATE` | `ANALYTICS_PROD`: `USAGE`; `BRONZE`: `USAGE` | `BRONZE`: `CREATE TABLE`, `CREATE STAGE`, `CREATE FILE FORMAT` |
-| `ROLE_PROD_DBT` | `WH_PROD_DBT`: `USAGE`, `OPERATE` | `ANALYTICS_PROD`: `USAGE`; `BRONZE`, `DIMENSIONS`, `FACTS`, `DATASET`, `SECURITY`, `INTEGRATION`: `USAGE` | `BRONZE`: `SELECT` on all/future tables, `CREATE TABLE` (for `dbt seed`); `INTEGRATION`: `CREATE GIT REPOSITORY`; `DIMENSIONS`/`FACTS`/`DATASET`: `CREATE TABLE`, `CREATE VIEW`; `SECURITY`: `READ`/`USAGE` on `GITHUB_PAT_SECRET` |
+| `ROLE_PROD_DBT` | `WH_PROD_DBT`: `USAGE`, `OPERATE` | `ANALYTICS_PROD`: `USAGE`; `BRONZE`, `DIMENSIONS`, `FACTS`, `DATASET`, `SECURITY`, `INTEGRATION`: `USAGE` | `BRONZE`: `SELECT` on all/future tables, `CREATE TABLE` (for `dbt seed`); `DIMENSIONS`/`FACTS`/`DATASET`: `CREATE TABLE`, `CREATE VIEW`; `SECURITY`: `READ`/`USAGE` on `GITHUB_PAT_SECRET` |
 | `ROLE_PROD_BI` | `WH_PROD_BI`: `USAGE` | `ANALYTICS_PROD`: `USAGE`; `DATASET`: `USAGE` | `DATASET`: `SELECT` on all/future tables and views |
 
 ## Prerequisites
@@ -110,15 +110,13 @@ What this script does:
 - creates API integration `GITHUB_INT`
 - creates secret `ANALYTICS_PROD.SECURITY.GITHUB_PAT_SECRET` (GitHub username + PAT)
 - grants access to `ROLE_PROD_DBT`
-- creates Git repository object `ANALYTICS_PROD.INTEGRATION.DBT_REPO`
-- fetches and validates branches/tags
 
 Before execution, replace:
 - `'<YOUR_GITHUB_CLASSIC_PAT>'` in `sql/bootstrap_git_integration.sql`
 
 ## Deploy dbt Project in Snowsight (`SNOWFLAKE_DBT`)
 
-After your workspace is connected to this repo and `DBT_REPO` exists, deploy a Snowflake dbt project object:
+After your workspace is connected to this repo, deploy a Snowflake dbt project object:
 Reference flow: [Snowflake dbt Projects getting started tutorial](https://docs.snowflake.com/en/user-guide/tutorials/dbt-projects-on-snowflake-getting-started-tutorial#run-the-sql-commands-in-tasty-bytes-setup-sql-to-set-up-source-data).
 
 1. Open `Projects` -> `Workspaces`, then open your dbt workspace.
@@ -133,9 +131,8 @@ Reference flow: [Snowflake dbt Projects getting started tutorial](https://docs.s
 6. Select `Deploy`.
 
 Notes:
-- This creates (or replaces) a Snowflake dbt project object, separate from the Git repository object.
+- This creates (or replaces) a Snowflake dbt project object.
 - Later updates from workspace use `Connect` -> `Redeploy dbt project` (adds a new project version).
-- If the UI cannot find the repo/object, run `sql/bootstrap_dbt_repo.sql` and refresh Snowsight.
 
 ## Setup Instructions
 
@@ -150,7 +147,6 @@ Notes:
 2. Run Git integration bootstrap SQL (can be before or after step 1):
    - Open and execute `sql/bootstrap_git_integration.sql`.
    - Replace `'<YOUR_GITHUB_CLASSIC_PAT>'` first.
-   - If `DBT_REPO` is missing in Snowsight, run `sql/bootstrap_dbt_repo.sql` to (re)create `ANALYTICS_PROD.INTEGRATION.DBT_REPO`.
 
 3. Configure dbt profile:
    - Copy `profiles.yml.example` to your dbt profiles location as `profiles.yml`.
