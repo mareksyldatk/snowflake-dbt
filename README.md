@@ -140,9 +140,14 @@ Before execution, replace:
 
 5. Load Bronze data from seeds:
    - `dbt seed --target prod`
+   - This project includes `macros/generate_schema_name.sql` so layer schemas are used as-is (`BRONZE`, `DIMENSIONS`, `FACTS`, `DATASET`) without dbt prefixing.
 
 6. Build Silver + Gold models and run tests:
    - `dbt build --target prod`
+
+7. If you previously loaded into a prefixed schema (for example `BRONZE_BRONZE`), clean it up:
+   - `DROP SCHEMA IF EXISTS ANALYTICS_PROD.BRONZE_BRONZE CASCADE;`
+   - Re-run `dbt seed --target prod`.
 
 ## Expected Outputs
 
