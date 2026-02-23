@@ -56,15 +56,19 @@ flowchart LR
 ```mermaid
 flowchart TB
   SVCI["User: SVC_INGEST"] --> RI["ROLE_PROD_INGEST"]
-  DBTU["dbt Users/Groups"] --> RD["ROLE_PROD_DBT"]
-  BIU["BI Users/Groups"] --> RB["ROLE_PROD_BI"]
+  EXTD["User: EXT_DBT"] --> RD["ROLE_PROD_DBT"]
+  EXTB["User: EXT_BI"] --> RB["ROLE_PROD_BI"]
+  EXTBA["User: EXT_BI_ANALYST"] --> RBA["ROLE_PROD_BI_ANALYST"]
+  RBA --> RB
 
   RI --> WHI["WH_PROD_INGEST (USAGE, OPERATE)"]
   RD --> WHD["WH_PROD_DBT (USAGE, OPERATE)"]
   RB --> WHB["WH_PROD_BI (USAGE)"]
+  RBA --> WHB
 
   RI --> BRW["ANALYTICS_PROD.BRONZE (USAGE, CREATE TABLE/STAGE/FILE FORMAT)"]
   RD --> BRR["ANALYTICS_PROD.BRONZE (USAGE, SELECT, CREATE TABLE for dbt seed)"]
+  RBA --> BRR2["ANALYTICS_PROD.BRONZE (USAGE, SELECT TABLES)"]
   RD --> INTG["ANALYTICS_PROD.INTEGRATION (USAGE)"]
   RD --> SEC["ANALYTICS_PROD.SECURITY (USAGE + READ/USAGE on GITHUB_PAT_SECRET)"]
   RD --> DMW["ANALYTICS_PROD.DIMENSIONS (USAGE, CREATE TABLE/VIEW)"]
@@ -80,6 +84,16 @@ flowchart TB
 | `ROLE_PROD_INGEST` | `WH_PROD_INGEST`: `USAGE`, `OPERATE` | `ANALYTICS_PROD`: `USAGE`; `BRONZE`: `USAGE` | `BRONZE`: `CREATE TABLE`, `CREATE STAGE`, `CREATE FILE FORMAT` |
 | `ROLE_PROD_DBT` | `WH_PROD_DBT`: `USAGE`, `OPERATE` | `ANALYTICS_PROD`: `USAGE`; `BRONZE`, `DIMENSIONS`, `FACTS`, `DATASET`, `SECURITY`, `INTEGRATION`: `USAGE` | `BRONZE`: `SELECT` on all/future tables, `CREATE TABLE` (for `dbt seed`); `DIMENSIONS`/`FACTS`/`DATASET`: `CREATE TABLE`, `CREATE VIEW`; `SECURITY`: `READ`/`USAGE` on `GITHUB_PAT_SECRET` |
 | `ROLE_PROD_BI` | `WH_PROD_BI`: `USAGE` | `ANALYTICS_PROD`: `USAGE`; `DATASET`: `USAGE` | `DATASET`: `SELECT` on all/future tables and views |
+| `ROLE_PROD_BI_ANALYST` | `WH_PROD_BI`: `USAGE` | `ANALYTICS_PROD`: `USAGE`; `BRONZE`: `USAGE`; inherits `ROLE_PROD_BI` | `DATASET`: same as `ROLE_PROD_BI`; `BRONZE`: `SELECT` on all/future tables |
+
+### Bootstrapped Users
+
+| User | Default Role | Default Warehouse | Purpose |
+|---|---|---|---|
+| `SVC_INGEST` | `ROLE_PROD_INGEST` | `WH_PROD_INGEST` | Ingestion service user |
+| `EXT_DBT` | `ROLE_PROD_DBT` | `WH_PROD_DBT` | dbt Core/local execution |
+| `EXT_BI` | `ROLE_PROD_BI` | `WH_PROD_BI` | BI consumer (gold read-only) |
+| `EXT_BI_ANALYST` | `ROLE_PROD_BI_ANALYST` | `WH_PROD_BI` | Analyst (gold read + bronze read) |
 
 ## Prerequisites
 
@@ -142,7 +156,7 @@ Notes:
 
 1. Run core Snowflake bootstrap SQL:
    - Open and execute `sql/bootstrap_prod.sql`.
-   - This creates warehouses, database/schemas, roles, and the optional ingest service user.
+   - This creates warehouses, database/schemas, roles, and optional users (`SVC_INGEST`, `EXT_DBT`, `EXT_BI`, `EXT_BI_ANALYST`).
 
 2. Run Git integration bootstrap SQL (can be before or after step 1):
    - Open and execute `sql/bootstrap_git_integration.sql`.
@@ -162,6 +176,24 @@ Notes:
 
 6. Build Silver + Gold models and run tests:
    - `dbt build --target prod`
+
+## Set Default Snowflake Context
+
+To start new Snowsight/SQL sessions as `ACCOUNTADMIN` on `COMPUTE_WH` and `ANALYTICS_PROD.PUBLIC`:
+
+```sql
+USE ROLE SECURITYADMIN;
+
+ALTER USER <YOUR_USER> SET DEFAULT_ROLE = ACCOUNTADMIN;
+ALTER USER <YOUR_USER> SET DEFAULT_WAREHOUSE = COMPUTE_WH;
+ALTER USER <YOUR_USER> SET DEFAULT_NAMESPACE = ANALYTICS_PROD.PUBLIC;
+```
+
+Verify current session context:
+
+```sql
+SELECT CURRENT_ROLE(), CURRENT_WAREHOUSE(), CURRENT_DATABASE(), CURRENT_SCHEMA();
+```
 
 ## Expected Outputs
 
