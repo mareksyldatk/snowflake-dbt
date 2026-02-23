@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: dim_users
+    description: Silver dimension table for users.
+    columns:
+      - name: user_id
+        tests: [not_null, unique]
+      - name: email
+        tests: [not_null, unique]
+
+  - name: dim_products
+    description: Silver dimension table for products.
+    columns:
+      - name: product_id
+        tests: [not_null, unique]
+      - name: unit_price
+        tests: [not_null]
+
+  - name: fct_transactions
+    description: Silver fact table for transactions enriched with product price.
+    columns:
+      - name: transaction_id
+        tests: [not_null, unique]
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: gross_amount
+        tests: [not_null]

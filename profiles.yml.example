@@ -1,0 +1,14 @@
+snowflake_dbt_template:
+  target: prod
+  outputs:
+    prod:
+      type: snowflake
+      account: "<account_identifier>"
+      user: "SVC_DBT"
+      password: "<or use key-pair auth>"
+      role: "ROLE_PROD_DBT"
+      warehouse: "WH_PROD_DBT"
+      database: "ANALYTICS_PROD"
+      schema: "BRONZE"
+      threads: 8
+      client_session_keep_alive: false

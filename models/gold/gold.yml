@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: transaction
+    description: Gold transaction-level sales dataset in DATASET schema.
+    columns:
+      - name: transaction_id
+        tests: [not_null, unique]
+      - name: gross_amount
+        tests: [not_null]
+
+  - name: user_transactions
+    description: Gold user-level aggregated sales dataset.
+    columns:
+      - name: user_id
+        tests: [not_null, unique]
+      - name: completed_sales_amount
+        tests: [not_null]

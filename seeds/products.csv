@@ -1,0 +1,5 @@
+product_id,product_name,category,unit_price,is_active
+100,Starter Plan,Subscription,29.00,true
+101,Pro Plan,Subscription,79.00,true
+102,Enterprise Add-on,Addon,199.00,true
+103,Training Pack,Services,499.00,false

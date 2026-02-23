@@ -1,0 +1,6 @@
+user_id,first_name,last_name,email,created_at,country
+1,Alice,Nguyen,alice@example.com,2025-01-01,US
+2,Bob,Martin,bob@example.com,2025-01-03,US
+3,Carla,Diaz,carla@example.com,2025-01-07,CA
+4,David,Lee,david@example.com,2025-01-11,GB
+5,Emma,Rossi,emma@example.com,2025-01-15,US

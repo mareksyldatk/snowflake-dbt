@@ -1,0 +1,39 @@
+name: snowflake_dbt_template
+version: 1.0.0
+config-version: 2
+
+profile: snowflake_dbt_template
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  snowflake_dbt_template:
+    +database: ANALYTICS_PROD
+    +materialized: table
+
+    bronze:
+      +schema: BRONZE
+
+    silver:
+      dimensions:
+        +schema: DIMENSIONS
+      facts:
+        +schema: FACTS
+
+    gold:
+      dataset:
+        +schema: DATASET
+
+seeds:
+  snowflake_dbt_template:
+    +database: ANALYTICS_PROD
+    +schema: BRONZE
+    +quote_columns: false

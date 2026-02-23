@@ -1,0 +1,7 @@
+transaction_id,user_id,product_id,quantity,transaction_ts,status
+1000,1,100,1,2025-02-01 10:15:00,completed
+1001,2,101,1,2025-02-01 11:22:00,completed
+1002,3,102,2,2025-02-02 09:05:00,completed
+1003,1,101,1,2025-02-03 14:18:00,completed
+1004,4,103,1,2025-02-03 16:40:00,refunded
+1005,5,100,3,2025-02-04 08:12:00,completed
