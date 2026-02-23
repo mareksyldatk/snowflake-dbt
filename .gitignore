@@ -1,3 +1,6 @@
 AGENTS.md
 .idea/
 profiles.yml
+target/
+logs/
+dbt_packages/
