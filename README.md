@@ -129,6 +129,7 @@ Before execution, replace:
 2. Run Git integration bootstrap SQL (can be before or after step 1):
    - Open and execute `sql/bootstrap_git_integration.sql`.
    - Replace `'<YOUR_GITHUB_CLASSIC_PAT>'` first.
+   - If `DBT_REPO` is missing in Snowsight, run `sql/bootstrap_dbt_repo.sql` to (re)create `ANALYTICS_PROD.INTEGRATION.DBT_REPO`.
 
 3. Configure dbt profile:
    - Copy `profiles.yml.example` to your dbt profiles location as `profiles.yml`.
