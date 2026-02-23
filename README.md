@@ -85,11 +85,22 @@ flowchart TB
 - dbt Core with Snowflake adapter installed (`dbt-snowflake`)
 - Access to this repository locally
 
+## Python Setup
+
+Use the bootstrap script to create a `pyenv` virtualenv named `snowflake-dbt` and install dependencies from `requirements.txt`.
+
+- Default Python version:
+  - `./scripts/setup_python.sh`
+- Pin Python version explicitly:
+  - `./scripts/setup_python.sh 3.12.5`
+- Activate environment:
+  - `pyenv activate snowflake-dbt`
+
 ## Setup Instructions
 
 0. (Optional) Create local `pyenv` virtualenv for dbt:
-   - `./scripts/setup_pyenv_virtualenv.sh`
-   - Or pin a version: `./scripts/setup_pyenv_virtualenv.sh 3.12.5`
+   - `./scripts/setup_python.sh`
+   - Or pin a version: `./scripts/setup_python.sh 3.12.5`
 
 1. Run Snowflake bootstrap SQL:
    - Open and execute `sql/bootstrap_prod.sql`.
