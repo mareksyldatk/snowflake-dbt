@@ -1,4 +1,4 @@
-snowflake_dbt_template:
+snowflake_dbt:
   target: prod
   outputs:
     prod:
