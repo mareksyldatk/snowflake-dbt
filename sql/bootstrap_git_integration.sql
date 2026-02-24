@@ -24,8 +24,7 @@ CREATE SCHEMA IF NOT EXISTS ANALYTICS_PROD.INTEGRATION;
 CREATE OR REPLACE API INTEGRATION GITHUB_INT
   API_PROVIDER = git_https_api
   API_ALLOWED_PREFIXES = (
-    'https://github.com/mareksyldatk/snowflake-dbt.git',
-    'https://github.com/mareksyldatk/snowflake-dbt'
+    'https://github.com/mareksyldatk/snowflake-dbt.git'
   )
   ALLOWED_AUTHENTICATION_SECRETS = ALL
   ENABLED = TRUE;
