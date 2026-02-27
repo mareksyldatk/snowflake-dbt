@@ -52,7 +52,7 @@ dbt build --target dev
 ## RBAC Summary
 
 - `ROLE_DEV_INGEST`: read/write on `BRONZE_DEV.BRONZE`
-- `ROLE_DEV_DBT`: read Bronze, write Silver/Gold, use Git integration secret
+- `ROLE_DEV_DBT`: read Bronze, write Silver/Gold, use Git integration secret, create dbt projects/tasks in `PLATFORM_DEV.DBT_DEPLOYMENT`
 - `ROLE_DEV_BI`: read-only on `SILVER_DEV.DIMENSIONS`, `SILVER_DEV.FACTS`, and `GOLDEN_DEV.DATASET`
 
 Bootstrapped users:
@@ -69,6 +69,62 @@ https://docs.snowflake.com/en/user-guide/tutorials/dbt-projects-on-snowflake-get
 
 Suggested deploy location:
 - `PLATFORM_DEV / DBT_DEPLOYMENT`
+
+## Create Deployment Using SQL (`SNOWFLAKE_DBT`)
+
+You can create the deployment object directly with SQL:
+
+```sql
+USE ROLE ROLE_DEV_DBT;
+USE DATABASE PLATFORM_DEV;
+USE SCHEMA DBT_DEPLOYMENT;
+
+CREATE OR REPLACE DBT PROJECT PLATFORM_DEV.DBT_DEPLOYMENT.SNOWFLAKE_DBT
+  FROM 'snow://workspace/user$.public."YOUR_WORKSPACE_NAME"/versions/live'
+  DEFAULT_TARGET = 'dev'
+  COMMENT = 'snowflake-dbt deployment';
+
+SHOW DBT PROJECTS IN SCHEMA PLATFORM_DEV.DBT_DEPLOYMENT;
+```
+
+If your dbt project is in a subdirectory, append the path in `FROM`:
+
+```sql
+CREATE OR REPLACE DBT PROJECT PLATFORM_DEV.DBT_DEPLOYMENT.SNOWFLAKE_DBT
+  FROM 'snow://workspace/user$.public."YOUR_WORKSPACE_NAME"/versions/live/path/to/dbt_project'
+  DEFAULT_TARGET = 'dev';
+```
+
+## Schedule Deployment Run (`SNOWFLAKE_DBT`)
+
+Create a Snowflake task to run the deployed dbt project on a schedule:
+
+```sql
+USE ROLE ROLE_DEV_DBT;
+USE DATABASE PLATFORM_DEV;
+USE SCHEMA DBT_DEPLOYMENT;
+
+CREATE OR REPLACE TASK PLATFORM_DEV.DBT_DEPLOYMENT.DBT_SNOWFLAKE
+  WAREHOUSE = WH_DEV_DBT
+  SCHEDULE = 'USING CRON 1 * * * * Europe/Warsaw'
+AS
+  EXECUTE DBT PROJECT SNOWFLAKE_DBT ARGS = 'run --target dev';
+
+ALTER TASK PLATFORM_DEV.DBT_DEPLOYMENT.DBT_SNOWFLAKE RESUME;
+```
+
+Optional test run:
+
+```sql
+EXECUTE TASK PLATFORM_DEV.DBT_DEPLOYMENT.DBT_SNOWFLAKE;
+```
+
+If task execution fails with `EXECUTE TASK privilege must be granted to owner role`, run:
+
+```sql
+USE ROLE ACCOUNTADMIN;
+GRANT EXECUTE TASK ON ACCOUNT TO ROLE ROLE_DEV_DBT;
+```
 
 ## Expected Outputs
 
