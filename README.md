@@ -68,7 +68,7 @@ Reference tutorial:
 https://docs.snowflake.com/en/user-guide/tutorials/dbt-projects-on-snowflake-getting-started-tutorial#run-the-sql-commands-in-tasty-bytes-setup-sql-to-set-up-source-data
 
 Suggested deploy location:
-- `PLATFORM_DEV / INTEGRATION`
+- `PLATFORM_DEV / DBT_DEPLOYMENT`
 
 ## Expected Outputs
 
