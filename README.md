@@ -34,7 +34,7 @@ Copy `profiles.yml.example` to `~/.dbt/profiles.yml` and fill credentials as nee
 Current default target in example:
 - role: `ROLE_DEV_DBT`
 - warehouse: `WH_DEV_DBT`
-- database/schema fallback: `BRONZE_DEV.BRONZE`
+- database/schema fallback: `PLATFORM_DEV.DBT_RUNTIME`
 
 ## Run dbt
 

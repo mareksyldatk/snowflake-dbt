@@ -7,7 +7,7 @@ snowflake_dbt:
       user: "not needed"
       role: "ROLE_DEV_DBT"
       warehouse: "WH_DEV_DBT"
-      database: "BRONZE_DEV"
-      schema: "BRONZE"
+      database: "PLATFORM_DEV"
+      schema: "DBT_RUNTIME"
       threads: 8
       client_session_keep_alive: false
