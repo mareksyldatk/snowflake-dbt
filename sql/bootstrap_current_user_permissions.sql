@@ -1,0 +1,24 @@
+-- Bootstrap current executing user for local dbt runs
+-- Purpose:
+-- - grant ROLE_DEV_DBT to CURRENT_USER()
+-- - set default role/warehouse/namespace for this user
+--
+-- Run as SECURITYADMIN (or a role that can GRANT ROLE / ALTER USER).
+
+USE ROLE SECURITYADMIN;
+
+BEGIN
+  LET EXECUTING_USER STRING := CURRENT_USER();
+
+  EXECUTE IMMEDIATE
+    'GRANT ROLE ROLE_DEV_DBT TO USER "' || EXECUTING_USER || '"';
+
+  EXECUTE IMMEDIATE
+    'ALTER USER "' || EXECUTING_USER || '" SET DEFAULT_ROLE = ROLE_DEV_DBT';
+
+  EXECUTE IMMEDIATE
+    'ALTER USER "' || EXECUTING_USER || '" SET DEFAULT_WAREHOUSE = WH_DEV_DBT';
+
+  EXECUTE IMMEDIATE
+    'ALTER USER "' || EXECUTING_USER || '" SET DEFAULT_NAMESPACE = PLATFORM_DEV.DBT_RUNTIME';
+END;

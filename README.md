@@ -16,12 +16,14 @@ dbt moves data across databases using `ref()` and per-layer `+database` config i
 - `profiles.yml.example`: minimal dbt target profile
 - `sql/bootstrap_dev.sql`: core warehouses, roles, users, and RBAC
 - `sql/bootstrap_git_integration.sql`: GitHub API integration + PAT secret grants
+- `sql/bootstrap_current_user_permissions.sql`: grants `ROLE_DEV_DBT` to your current user and sets defaults
 - `models/`, `seeds/`, `macros/`: dbt models, source seeds, and schema macro override
 
 ## Bootstrap (Snowflake)
 
 1. Run `sql/bootstrap_dev.sql`.
 2. Run `sql/bootstrap_git_integration.sql` (replace `<YOUR_GITHUB_CLASSIC_PAT>` first).
+3. Run `sql/bootstrap_current_user_permissions.sql` to grant `ROLE_DEV_DBT` to your current user and set default role/warehouse/namespace for dbt.
 
 Git integration objects are created in:
 - `PLATFORM_DEV.SECURITY.GITHUB_PAT_SECRET`
