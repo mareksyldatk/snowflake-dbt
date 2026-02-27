@@ -16,24 +16,28 @@ clean-targets:
 
 models:
   snowflake_dbt:
-    +database: ANALYTICS_PROD
+    +database: BRONZE_DEV
     +materialized: table
 
     bronze:
+      +database: BRONZE_DEV
       +schema: BRONZE
 
     silver:
       dimensions:
+        +database: SILVER_DEV
         +schema: DIMENSIONS
       facts:
+        +database: SILVER_DEV
         +schema: FACTS
 
     gold:
       dataset:
+        +database: GOLDEN_DEV
         +schema: DATASET
 
 seeds:
   snowflake_dbt:
-    +database: ANALYTICS_PROD
+    +database: BRONZE_DEV
     +schema: BRONZE
     +quote_columns: false

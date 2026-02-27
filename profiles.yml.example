@@ -1,13 +1,13 @@
 snowflake_dbt:
-  target: prod
+  target: dev
   outputs:
-    prod:
+    dev:
       type: snowflake
       account: "not needed"
       user: "not needed"
-      role: "ROLE_PROD_DBT"
-      warehouse: "WH_PROD_DBT"
-      database: "ANALYTICS_PROD"
-      schema: "INTEGRATION"
+      role: "ROLE_DEV_DBT"
+      warehouse: "WH_DEV_DBT"
+      database: "BRONZE_DEV"
+      schema: "BRONZE"
       threads: 8
       client_session_keep_alive: false
