@@ -80,7 +80,7 @@ USE DATABASE PLATFORM_DEV;
 USE SCHEMA DBT_DEPLOYMENT;
 
 CREATE OR REPLACE DBT PROJECT PLATFORM_DEV.DBT_DEPLOYMENT.SNOWFLAKE_DBT
-  FROM 'snow://workspace/user$.public."YOUR_WORKSPACE_NAME"/versions/live'
+  FROM 'snow://workspace/user$.public."snowflake-dbt"/versions/live'
   DEFAULT_TARGET = 'dev'
   COMMENT = 'snowflake-dbt deployment';
 
@@ -91,7 +91,7 @@ If your dbt project is in a subdirectory, append the path in `FROM`:
 
 ```sql
 CREATE OR REPLACE DBT PROJECT PLATFORM_DEV.DBT_DEPLOYMENT.SNOWFLAKE_DBT
-  FROM 'snow://workspace/user$.public."YOUR_WORKSPACE_NAME"/versions/live/path/to/dbt_project'
+  FROM 'snow://workspace/user$.public."snowflake-dbt"/versions/live/path/to/dbt_project'
   DEFAULT_TARGET = 'dev';
 ```
 
